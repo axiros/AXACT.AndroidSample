@@ -17,7 +17,7 @@ public class MainActivity extends Activity  {
 
         mServiceIntent = new Intent(this, AxirosService.class);
         // About this key https://wiki.axiros.com/display/EFI/INTERNAL
-        mServiceIntent.putExtra("key", "YpZYIAXwSWP5zKpsVRp8eM5Y7dFl9RY+F07Q2OUdx7x1dvZMsiBBg6BqbGwGsWSS3VinmLFweXSepmIrCG1lgg==");
+        mServiceIntent.putExtra("key", "KEY HERE");
         startService(mServiceIntent);
 
         Toast.makeText(this, "AXACT Service started.", Toast.LENGTH_LONG).show();
