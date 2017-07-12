@@ -23,4 +23,11 @@ public class MainActivity extends AppCompatActivity  {
 
         Toast.makeText(this, "AXACT Service started.", Toast.LENGTH_LONG).show();
     }
+
+    @Override
+    protected void onDestroy() {
+        Toast.makeText(this, "Stoping AXACT Service.", Toast.LENGTH_LONG).show();
+        stopService(mServiceIntent);
+        super.onDestroy();
+    }
 }
