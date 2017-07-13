@@ -1,14 +1,15 @@
 package com.axiros.axactservice;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.axiros.axact.AxirosService;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity  extends Activity implements View.OnClickListener {
     Intent mServiceIntent;
 
     @Override
@@ -29,5 +30,10 @@ public class MainActivity extends AppCompatActivity  {
         Toast.makeText(this, "Stoping AXACT Service.", Toast.LENGTH_LONG).show();
         stopService(mServiceIntent);
         super.onDestroy();
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 }
