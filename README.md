@@ -1,6 +1,8 @@
 # AXACT
 `Axiros AXACT - Android Wrapper` is a wrapper for `AXACT`
 
+NOTE: this DEMO APK version is compiled for armeabi-v7a OLNY for other platform please download the correspondents LIB
+
 This project contains a sample application to demostrate how to use TR-069 and TR-143.
 `AXACT` is embedded in this project as an android library.
 
