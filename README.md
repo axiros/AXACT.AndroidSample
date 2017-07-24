@@ -9,7 +9,7 @@ This project contains a sample application to demostrate how to use TR-069 and T
 `AXACT` is embedded in this project as an android library.
 
 <p align="center" >
-<img src="http://bzero.github.io/assets/images/Screenshot_2017-07-12%2010-32-09.png" width="800" height="500"/>
+<img src="http://bzero.github.io/assets/images/Screenshot_2017-07-24-10-59-14.png" width="800" height="500"/>
 </p>
 
 This version opens a blank activity `AXACT` is started as service on application run. 
