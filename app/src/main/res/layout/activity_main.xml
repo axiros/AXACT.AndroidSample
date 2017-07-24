@@ -1,19 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.axiros.axactservice.MainActivity">
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textViewConnection"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="AXACT Service"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:text=" " />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text=" "
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/textViewUDPStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" " />
+
+
+    <TextView
+        android:id="@+id/textViewUDP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" " />
+
+
+    <TextView
+        android:id="@+id/textViewDownloadStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" " />
+
+
+    <ProgressBar
+        android:id="@+id/progressBarDownload"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:progress="0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textViewDownload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" " />
+
+    <TextView
+        android:id="@+id/textViewUploadStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" " />
+
+    <ProgressBar
+        android:id="@+id/progressBarUpload"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:progress="0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textViewUpload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" " />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text=" "
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/buttonStart"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Start service"></Button>
+
+    <Button
+        android:id="@+id/buttonStop"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Stop service"></Button>
+
+</LinearLayout>
