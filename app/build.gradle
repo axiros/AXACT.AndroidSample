@@ -26,5 +26,5 @@ dependencies {
     })
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile project(':axactandroid-release-armeabi-v7a-v3.2.1-008')
+    compile project(':axactandroid-release-armeabi-v7a-v3.2.1-009')
 }
