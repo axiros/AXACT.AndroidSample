@@ -149,12 +149,15 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
 
         // About this key https://wiki.axiros.com/display/EFI/INTERNAL
         mServiceIntent.putExtra("key", "zptkrc8uJaud1spndstrqhCwb/MGaAj72Oiv2WcU43EaawEHu1bGoqrbLdpqF/EQX1ChYOT7dUuKYssVivAHcQ==");
-        mServiceIntent.putExtra("cert", "eaq.com.br.crt");
+
+        // only integrators with url need to use it
+        //mServiceIntent.putExtra("cert", "eaq.com.br.crt");
     }
 
     @Override
     protected void onDestroy() {
         Toast.makeText(this, "Stoping AXACT Service.", Toast.LENGTH_LONG).show();
+        mService.unregisterEventsListener(mActivity);
         stopService(mServiceIntent);
         unbindService(mConnection);
         super.onDestroy();
@@ -299,7 +302,6 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
         public void onServiceConnected(ComponentName className, IBinder service) {
             if (!mBound) {
                 mBound = true;
-
                 AxirosService.LocalBinder binder = (AxirosService.LocalBinder) service;
                 mService = binder.getServiceInstance();
                 mService.registerEventsListener(mActivity);
@@ -312,7 +314,6 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
         public void onServiceDisconnected(ComponentName arg0) {
             if (mBound) {
                 mBound = false;
-                mService.unregisterEventsListener(mActivity);
                 Toast.makeText(mActivity, "AXACT Service stoped.", Toast.LENGTH_LONG).show();
             }
         }
