@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions{
+        doNotStrip "*/armeabi-v7a/*.so"
+    }
 }
 
 dependencies {
@@ -26,5 +29,5 @@ dependencies {
     })
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile project(':axactandroid-release-armeabi-v7a-v3.2.4-010')
+    compile project(':axactandroid-release-armeabi-v7a-v3.2.5-011')
 }

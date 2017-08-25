@@ -2,6 +2,7 @@ package com.axiros.axactservice;
 
 import android.app.Activity;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,14 +17,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.axiros.axact.AxirosService;
 
-public class MainActivity  extends Activity implements View.OnClickListener, AxirosService.AxirosEventsListener {
-    Intent mServiceIntent;
-    AxirosService mService;
-    boolean mBound = false;
+public class MainActivity  extends BaseActivity implements View.OnClickListener, AxirosService.AxirosEventsListener {
+    private static AxirosService mService;
+    private static AxirosService.LocalBinder mServiceBinder;
+    private static Intent mServiceIntent;
+
+    private static boolean mBound;
 
     MainActivity mActivity;
     Button buttonStart, buttonStop;
@@ -113,11 +115,55 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
         return networkType;
     }
 
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.axiros.axact.AxirosService".equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mServiceBinder = (AxirosService.LocalBinder)service;
+            mService = mServiceBinder.getServiceInstance();
+            mService.registerEventsListener(mActivity);
+            textViewConnection.setText(String.format("Connection type: %s", getNetworkType()));
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService.unregisterEventsListener(mActivity);
+            mService = null;
+            mServiceBinder = null;
+        }
+    };
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        init();
+
+        Intent intent = new Intent(this, AxirosService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(mConnection);
+        super.onDestroy();
+    }
+
+    private void init()
+    {
         mActivity = this;
 
         buttonStart = (Button) findViewById(R.id.buttonStart);
@@ -132,8 +178,17 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
 
         textViewConnection = (TextView) findViewById(R.id.textViewConnection);
 
-        buttonStart.setEnabled(true);
-        buttonStop.setEnabled(false);
+        if(isServiceRunning())
+        {
+            buttonStart.setEnabled(false);
+            buttonStop.setEnabled(true);
+        }
+        else
+        {
+            buttonStart.setEnabled(true);
+            buttonStop.setEnabled(false);
+        }
+
 
         buttonStart.setOnClickListener(this);
         buttonStop.setOnClickListener(this);
@@ -143,24 +198,6 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
 
         mProgressBarDownload=(ProgressBar)findViewById(R.id.progressBarDownload);
         mProgressBarDownload.setProgress(0);
-
-        mServiceIntent = new Intent(this, AxirosService.class);
-        bindService(mServiceIntent, mConnection, 0);
-
-        // About this key https://wiki.axiros.com/display/EFI/INTERNAL
-        mServiceIntent.putExtra("key", "zptkrc8uJaud1spndstrqhCwb/MGaAj72Oiv2WcU43EaawEHu1bGoqrbLdpqF/EQX1ChYOT7dUuKYssVivAHcQ==");
-
-        // only integrators with url need to use it
-        //mServiceIntent.putExtra("cert", "eaq.com.br.crt");
-    }
-
-    @Override
-    protected void onDestroy() {
-        Toast.makeText(this, "Stoping AXACT Service.", Toast.LENGTH_LONG).show();
-        mService.unregisterEventsListener(mActivity);
-        stopService(mServiceIntent);
-        unbindService(mConnection);
-        super.onDestroy();
     }
 
     private void clearView() {
@@ -179,21 +216,34 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
 
     @Override
     public void onClick(View view) {
+
+
+        if (mServiceIntent == null)
+        {
+            mServiceIntent = new Intent(this, AxirosService.class);
+            // About this key https://wiki.axiros.com/display/EFI/INTERNAL
+            mServiceIntent.putExtra("key", "zptkrc8uJaud1spndstrqhCwb/MGaAj72Oiv2WcU43EaawEHu1bGoqrbLdpqF/EQX1ChYOT7dUuKYssVivAHcQ==");
+
+            // only integrators with url need to use it
+            mServiceIntent.putExtra("cert", "eaq.com.br.crt");
+        }
+
         switch (view.getId()) {
+
             case R.id.buttonStart:
-                if (!mBound) {
-                    startService(mServiceIntent);
-                }
                 buttonStart.setEnabled(false);
                 buttonStop.setEnabled(true);
+
+                startService(mServiceIntent);
+
                 break;
             case R.id.buttonStop:
-                if (mBound) {
-                    stopService(mServiceIntent);
-                    clearView();
-                }
                 buttonStart.setEnabled(true);
                 buttonStop.setEnabled(false);
+
+                stopService(mServiceIntent);
+
+                clearView();
                 break;
         }
     }
@@ -244,7 +294,7 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
                     public void onFinish() {
                         //Do what you want
                         countUp++;
-                        mProgressBarUpload.setProgress(100);
+                        mProgressBarUpload.setProgress(0);
                     }
                 };
                 mCountDownTimerUL.start();
@@ -257,6 +307,7 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                clearView();;
                 textViewUDPStatus.setText("Running UDP echo test");
             }
         });
@@ -269,6 +320,7 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
             @Override
             public void run() {
                 downloadView.setText( String.format("Download Result: %d", result));
+                mCountDownTimerDL.cancel();
             }
         });
     }
@@ -280,6 +332,9 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
             @Override
             public void run() {
                 uploadView.setText( String.format("Upload Result: %d", result));
+                if (mCountDownTimerUL != null) {
+                    mCountDownTimerUL.cancel();
+                }
             }
         });
     }
@@ -295,28 +350,5 @@ public class MainActivity  extends Activity implements View.OnClickListener, Axi
         });
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            if (!mBound) {
-                mBound = true;
-                AxirosService.LocalBinder binder = (AxirosService.LocalBinder) service;
-                mService = binder.getServiceInstance();
-                mService.registerEventsListener(mActivity);
-                textViewConnection.setText(String.format("Connection type: %s", getNetworkType()));
-                Toast.makeText(mActivity, "AXACT Service started.", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            if (mBound) {
-                mBound = false;
-                Toast.makeText(mActivity, "AXACT Service stoped.", Toast.LENGTH_LONG).show();
-            }
-        }
-    };
 
 }
