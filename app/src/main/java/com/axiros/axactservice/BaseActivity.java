@@ -1,15 +1,7 @@
 package com.axiros.axactservice;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.widget.Toast;
-
-import com.axiros.axact.AxirosService;
 
 /**
  * Created by bzero on 8/13/17.
