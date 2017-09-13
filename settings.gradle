@@ -1,1 +1,1 @@
-include ':app', ':axactandroid-release-armeabi-v7a-v3.2.6-013', ':axactandroid-release-arm64-v8a-v3.2.6-013'
+include ':app', ':axactandroid-release-armeabi-v7a-v3.2.6-013'
