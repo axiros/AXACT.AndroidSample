@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('axactandroid-release-all-v3.2.5-014.aar'))
