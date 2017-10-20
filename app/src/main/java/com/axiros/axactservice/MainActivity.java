@@ -50,6 +50,7 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
 
         mServiceIntent = new Intent(this, AxirosService.class);
 
+        // abr
         mServiceIntent.putExtra("key", "zptkrc8uJaud1spndstrqhCwb/MGaAj72Oiv2WcU43EaawEHu1bGoqrbLdpqF/EQX1ChYOT7dUuKYssVivAHcQ==");
 
         // only integrators with url need to use it
@@ -67,16 +68,6 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         super.onDestroy();
     }
 
-    private boolean isServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
-            if("com.axiros.axact.AxirosService".equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -85,6 +76,7 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
             mServiceBinder = (AxirosService.LocalBinder)service;
             mService = mServiceBinder.getServiceInstance();
             mService.registerEventsListener(mActivity);
+            mService.verifyServicePermission(mActivity);
             textViewConnection.setText(String.format("Connection type: %s", getNetworkType()));
 
             startService(mServiceIntent);
