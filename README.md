@@ -31,7 +31,7 @@ Beginning in Android 6.0 (API level 23), users grant permissions to apps while t
 In order to request server permissions, please be sure your bind the service in your APP and call verifyServicePermission method, a full sample can be found on MainActivity.
 
 ```
-            mService.verifyServicePermission(mActivity);
+mService.verifyServicePermission(mActivity);
 ```
 
 ## Tested intensively on multiple devices at AWS Device Farm
