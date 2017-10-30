@@ -10,11 +10,17 @@ This project contains a sample application to demostrate how to use TR-069 and T
 <img src="http://bzero.github.io/assets/images/Screenshot_2017-07-24-10-59-14.png" width="800" height="500"/>
 </p>
 
-This version opens a blank activity `AXACT` is started as service on application run. 
+This version opens a blank activity `AXACT` is started as service on application run and is configured to run as background service. in order to stop the service uses developer options to see running tasks:
 
 <p align="center" >
 <img src="http://bzero.github.io/assets/images/Screenshot_2017-07-12-10-04-26.png" width="800" height="500"/>
 </p>
+
+or call, fron any Activity:
+
+```
+stopService(new Intent(this, AxirosService.class));
+```
 
 
 ## LIB proguard rules
