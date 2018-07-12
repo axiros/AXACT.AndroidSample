@@ -51,7 +51,8 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         mServiceIntent = new Intent(this, AxirosService.class);
 
         // abr
-        mServiceIntent.putExtra("key", "zptkrc8uJaud1spndstrqhCwb/MGaAj72Oiv2WcU43EaawEHu1bGoqrbLdpqF/EQX1ChYOT7dUuKYssVivAHcQ==");
+        // XXX: Remember to put your key here
+        mServiceIntent.putExtra("key", "");
         mServiceIntent.putExtra("enableWakeLock", "Off");
 
         // only integrators with url need to use it
