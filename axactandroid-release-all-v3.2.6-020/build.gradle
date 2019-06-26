@@ -1,2 +1,0 @@
-configurations.maybeCreate("default")
-artifacts.add("default", file('axactandroid-release-all-v3.2.6-020.aar'))
