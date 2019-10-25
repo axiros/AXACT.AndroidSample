@@ -5,8 +5,8 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.axiros.axactservice"
-        minSdkVersion 16
-        targetSdkVersion 21
+        minSdkVersion 21
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -16,6 +16,9 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    lintOptions {
+          abortOnError false
     }
 }
 
@@ -27,5 +30,5 @@ dependencies {
     compile 'com.android.support:support-v4:25.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    implementation project(':axactandroid-release-all-v3.2.6-021')
+    implementation project(':axactandroid-release-all-v3.2.6-022')
 }

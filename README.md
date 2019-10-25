@@ -2,7 +2,6 @@
 
 `Axiros AXACT - Android Wrapper` is a wrapper for `AXACT`
 
-
 This project contains a sample application to demostrate how to use TR-069 and TR-143.
 `AXACT` is embedded in this project as an android library.
 
@@ -33,11 +32,32 @@ To use minifyEnabled build on your APP please add the following line to your pro
 
 ## Compiling on Android 6.0 (API level 23)
 
-Beginning in Android 6.0 (API level 23), users grant permissions to apps while the app is running, not when they install the app.
-In order to request server permissions, please be sure your bind the service in your APP and call verifyServicePermission method, a full sample can be found on MainActivity.
+Beginning in Android 6.0 (API level 23), users grant permissions to apps while it
+is running not when they install it. In order to request the required SDK permissions,
+please be sure to call the _verifyServicePermission_ method before binding the
+service and implement the _onRequestPermissionsResult_. Its return value will tell
+where the bind can be made. A full sample can be found on MainActivity.
 
 ```
-mService.verifyServicePermission(mActivity);
+@Override
+public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                       int[] grantResults)
+{
+    /*
+     * The option has already been chosen by the user. The bind can happen
+     * here.
+     */
+}
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    if (AxirosService..verifyServicePermission(MainActivity.this) == false) {
+        /*
+         * Permissions were already given by the user. The bind can happen
+         * here.
+         */
+    }
+}
 ```
 
 ## Tested intensively on multiple devices at AWS Device Farm

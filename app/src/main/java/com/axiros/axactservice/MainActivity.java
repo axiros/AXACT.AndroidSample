@@ -1,6 +1,5 @@
 package com.axiros.axactservice;
 
-import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,7 @@ import android.widget.TextView;
 
 import com.axiros.axact.AxirosService;
 
-public class MainActivity  extends BaseActivity implements AxirosService.AxirosEventsListener {
+public class MainActivity extends BaseActivity implements AxirosService.AxirosEventsListener {
     private static AxirosService mService;
     private static AxirosService.LocalBinder mServiceBinder;
     private static Intent mServiceIntent;
@@ -25,13 +24,10 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
 
     TextView textViewUploadStatus;
     TextView uploadView;
-
     TextView textViewDownloadStatus;
     TextView downloadView;
-
     TextView textViewUDPStatus;
     TextView textViewConnection;
-
     TextView udpEchoView;
 
     ProgressBar mProgressBarDownload;
@@ -43,8 +39,19 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
     int countDown = 0;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                           int[] grantResults)
     {
+        /*
+         * We can start the service since the user already made his choice about
+         * which permissions are given.
+         */
+        bindService(mServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
+        startService(mServiceIntent);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -58,8 +65,14 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         // only integrators with url need to use it
         mServiceIntent.putExtra("cert", "eaq.com.br.crt");
 
-        bindService(mServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
-
+        if (AxirosService.verifyServicePermission(MainActivity.this) == false) {
+            /*
+             * Since permissions have already been granted the service can be
+             * started here.
+             */
+            bindService(mServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
+            startService(mServiceIntent);
+        }
 
         init();
     }
@@ -72,16 +85,12 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             mServiceBinder = (AxirosService.LocalBinder)service;
             mService = mServiceBinder.getServiceInstance();
             mService.registerEventsListener(mActivity);
-            mService.verifyServicePermission(mActivity);
             textViewConnection.setText(String.format("Connection type: %s", getNetworkType()));
-
-            startService(mServiceIntent);
         }
 
         @Override
@@ -111,18 +120,16 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 if (mCountDownTimerUL != null) {
                     mCountDownTimerUL.cancel();
                 }
 
                 textViewDownloadStatus.setText("Running download test");
-                mCountDownTimerDL =new CountDownTimer(30000,1000) {
-
+                mCountDownTimerDL = new CountDownTimer(30000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         countDown++;
-                        mProgressBarDownload.setProgress((int) countDown *100/(30000/1000));
+                        mProgressBarDownload.setProgress(countDown *100/(30000/1000));
 
                     }
 
@@ -144,13 +151,12 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
             @Override
             public void run() {
                 textViewUploadStatus.setText("Running upload test");
-                mCountDownTimerUL =new CountDownTimer(30000,1000) {
 
+                mCountDownTimerUL = new CountDownTimer(30000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         countUp++;
-                        mProgressBarUpload.setProgress((int) countUp *100/(30000/1000));
-
+                        mProgressBarUpload.setProgress(countUp * 100 / (30000 / 1000));
                     }
 
                     @Override
@@ -160,6 +166,7 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
                         mProgressBarUpload.setProgress(0);
                     }
                 };
+
                 mCountDownTimerUL.start();
             }
         });
@@ -170,7 +177,7 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                clearView();;
+                clearView();
                 textViewUDPStatus.setText("Running UDP echo test");
             }
         });
@@ -183,6 +190,7 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
             @Override
             public void run() {
                 downloadView.setText( String.format("Download Result: %d", result));
+
                 if (mCountDownTimerDL != null) {
                     mCountDownTimerDL.cancel();
                 }
@@ -197,6 +205,7 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
             @Override
             public void run() {
                 uploadView.setText( String.format("Upload Result: %d", result));
+
                 if (mCountDownTimerUL != null) {
                     mCountDownTimerUL.cancel();
                 }
@@ -223,55 +232,70 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         if (networkInfo != null && networkInfo.isConnected()) {
             if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
                 switch (networkInfo.getSubtype()) {
-                    case TelephonyManager.NETWORK_TYPE_1xRTT:
-                        networkType = "1xRTT";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_CDMA:
-                        networkType = "CDMA";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_EDGE:
-                        networkType = "EDGE";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                        networkType = "EVDO_0";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
-                        networkType = "EVDO_A";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_GPRS:
-                        networkType = "GPRS";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_HSDPA:
-                        networkType = "HSDPA";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_HSPA:
-                        networkType = "HSPA";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_HSUPA:
-                        networkType = "HSUPA";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_UMTS:
-                        networkType = "UMTS";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_EHRPD:
-                        networkType = "EHRPD";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_EVDO_B:
-                        networkType = "EVDO_B";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_HSPAP:
-                        networkType = "HSPAP";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_IDEN:
-                        networkType = "IDEN";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_LTE:
-                        networkType = "LTE";
-                        break;
-                    case TelephonyManager.NETWORK_TYPE_UNKNOWN:
-                    default:
-                        networkType = "UNKNOWN";
-                        break;
+                case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    networkType = "1xRTT";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_CDMA:
+                    networkType = "CDMA";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_EDGE:
+                    networkType = "EDGE";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    networkType = "EVDO_0";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    networkType = "EVDO_A";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_GPRS:
+                    networkType = "GPRS";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    networkType = "HSDPA";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_HSPA:
+                    networkType = "HSPA";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    networkType = "HSUPA";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    networkType = "UMTS";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_EHRPD:
+                    networkType = "EHRPD";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                    networkType = "EVDO_B";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_HSPAP:
+                    networkType = "HSPAP";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_IDEN:
+                    networkType = "IDEN";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_LTE:
+                    networkType = "LTE";
+                    break;
+
+                case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                default:
+                    networkType = "UNKNOWN";
+                    break;
                 }
             } else if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 networkType = "WiFi";
@@ -283,18 +307,16 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         return networkType;
     }
 
-    private void init()
-    {
+    private void init() {
         mActivity = this;
 
-        textViewUDPStatus = (TextView) findViewById(R.id.textViewUDPStatus);
-        textViewUploadStatus = (TextView) findViewById(R.id.textViewUploadStatus);
-        textViewDownloadStatus = (TextView) findViewById(R.id.textViewDownloadStatus);
-        uploadView = (TextView) findViewById(R.id.textViewUpload);
-        downloadView = (TextView) findViewById(R.id.textViewDownload);
-        udpEchoView = (TextView) findViewById(R.id.textViewUDP);
-
-        textViewConnection = (TextView) findViewById(R.id.textViewConnection);
+        textViewUDPStatus = (TextView)findViewById(R.id.textViewUDPStatus);
+        textViewUploadStatus = (TextView)findViewById(R.id.textViewUploadStatus);
+        textViewDownloadStatus = (TextView)findViewById(R.id.textViewDownloadStatus);
+        uploadView = (TextView)findViewById(R.id.textViewUpload);
+        downloadView = (TextView)findViewById(R.id.textViewDownload);
+        udpEchoView = (TextView)findViewById(R.id.textViewUDP);
+        textViewConnection = (TextView)findViewById(R.id.textViewConnection);
 
         mProgressBarUpload=(ProgressBar)findViewById(R.id.progressBarUpload);
         mProgressBarUpload.setProgress(0);
@@ -302,5 +324,5 @@ public class MainActivity  extends BaseActivity implements AxirosService.AxirosE
         mProgressBarDownload=(ProgressBar)findViewById(R.id.progressBarDownload);
         mProgressBarDownload.setProgress(0);
     }
-
 }
+
